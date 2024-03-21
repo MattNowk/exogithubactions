@@ -1,84 +1,13 @@
-# Flux de travail d'exemple pour construire et déployer un site Next.js sur GitHub Pages
-#
-# Pour commencer avec Next.js, voir : https://nextjs.org/docs/getting-started
-#
-name: Déploiement du site Next.js sur Pages
-
-on:
-  # S'exécute lors des pushs sur la branche par défaut
-  push:
-    branches: ["main"]
-
-  # Vous permet d'exécuter ce flux de travail manuellement depuis l'onglet Actions
-  workflow_dispatch:
-
-# Définit les autorisations du GITHUB_TOKEN pour permettre le déploiement sur GitHub Pages
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-# Permet une seule déployment concurrente, en sautant les exécutions mises en file d'attente entre l'exécution en cours et la dernière mise en file d'attente.
-# Cependant, NE PAS annuler les exécutions en cours car nous voulons permettre à ces déploiements en production de se terminer.
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
-
-jobs:
-  # Job de construction
+name : Build lorsqu'on push
+on : push
+jobs: 
   build:
+    name: Build du projet exemple
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Détecter le gestionnaire de paquets
-        id: detect-package-manager
-        run: npm install
-      - run: npm ci
-      - run: npm run build
-      - name: Configuration de Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: "14"
-          cache: ${{ steps.detect-package-manager.outputs.manager }}
-      - name: Configuration de Pages
-        uses: actions/configure-pages@v4
-        with:
-          # Injecte automatiquement basePath dans votre fichier de configuration Next.js et désactive
-          # l'optimisation des images côté serveur (https://nextjs.org/docs/api-reference/next/image#unoptimized).
-          #
-          # Vous pouvez supprimer cette ligne si vous voulez gérer la configuration vous-même.
-          static_site_generator: next
-      - name: Restaurer le cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            .next/cache
-          # Générer un nouveau cache chaque fois que les paquets ou les fichiers source changent.
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
-          # Si les fichiers source ont changé mais pas les paquets, reconstruire à partir d'un cache précédent.
-          restore-keys: |
-            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}-
-      - name: Installer les dépendances
-        run: npm install
-      - name: Construction avec Next.js
-        run: npm run build
-      # - name: Exportation HTML statique avec Next.js
-      #   run: ${{ steps.detect-package-manager.outputs.runner }} next export
-      - name: Téléverser l'artefact
-        uses: actions/upload-artifact@v2
-        with:
-          name: site-nextjs
-          path: ./out
-
-  # Job de déploiement
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Déployer sur GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+    steps: 
+      - name : Récupérer le code
+        uses : actions/checkout@v4
+      - name : Installation des dépendances
+        uses : npm i
+      - name : Run build
+        uses : npm run build  
