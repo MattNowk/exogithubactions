@@ -10,4 +10,4 @@ jobs:
       - name : Installation des dépendances
         uses : npm i
       - name : Run build
-        uses : npm run build  
+        uses : npm run build
