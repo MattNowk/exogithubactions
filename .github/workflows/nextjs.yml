@@ -63,8 +63,8 @@ jobs:
         run: npm install
       - name: Construction avec Next.js
         run: npm run build
-      - name: Exportation HTML statique avec Next.js
-        run: ${{ steps.detect-package-manager.outputs.runner }} next export
+      # - name: Exportation HTML statique avec Next.js
+      #   run: ${{ steps.detect-package-manager.outputs.runner }} next export
       - name: Téléverser l'artefact
         uses: actions/upload-artifact@v2
         with:
